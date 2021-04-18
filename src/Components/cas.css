@@ -122,3 +122,7 @@
     width: 73%;
   }
 }
+
+.trying:hover {
+  background: lightgray;
+}

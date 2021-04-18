@@ -20,6 +20,8 @@ import {
   ShareAltOutlined,
 } from "@ant-design/icons";
 import DisplayComent from "../Components/dispalyComent";
+import { createContext } from "react";
+import { GlobalContext } from "./AuthState/GlobalContext";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -51,12 +53,13 @@ const posting = app.firestore().collection("FacebookPost");
 const db = app.firestore().collection("facebook");
 
 function CommentModal({ id, postedBy }) {
+  const { current, currentData } = createContext(GlobalContext);
   const classes = useStyles();
   // const { id } = useParams();
 
   const [data, setData] = useState([]);
   const [needData, setNeedData] = useState([]);
-
+  const [commentIn, setCommentIn] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [them, setThem] = useState([]);
   // const [texting, setTexting] = useState("");
@@ -84,6 +87,11 @@ function CommentModal({ id, postedBy }) {
     console.log(id);
   };
 
+  const gettingComment = async () => {
+    const newData = await posting.doc(id).get();
+    setCommentIn(newData.data());
+  };
+
   const comenting = async () => {
     const commentingUser = await app.auth().currentUser;
 
@@ -105,7 +113,7 @@ function CommentModal({ id, postedBy }) {
       await posting
         .doc(id)
         .collection("comment")
-        // .orderBy("dateTime", "asc")
+        .orderBy("timer", "asc")
         .onSnapshot((snap) => {
           const i = [];
           snap.forEach((doc) => {
@@ -120,13 +128,14 @@ function CommentModal({ id, postedBy }) {
     getPacked();
     getPack();
     getComment();
+    gettingComment();
   }, []);
 
   return (
     <>
       <div style={{ display: "flex", alignItems: "center" }}>
         <MessageOutlined onClick={handleOpen} style={{ fontSize: 17 }} />
-        <div style={{ fontSize: 10, marginLeft: 5 }}>30</div>
+        <div style={{ fontSize: 10, marginLeft: 5 }}>{needData.length}</div>
       </div>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -184,12 +193,16 @@ function CommentModal({ id, postedBy }) {
                 <CloseIcon style={{ marginRight: "10px" }} />
               </div>
 
-              <div className="station">{them && them.text}</div>
-              <img className="imma1" src={them && them.uploadData} style={{}} />
+              <div className="station">{commentIn && commentIn.text}</div>
+              <img
+                className="imma1"
+                src={commentIn && commentIn.uploadData}
+                style={{}}
+              />
 
               <div
                 style={{
-                  width: "80%",
+                  width: "70%",
                   display: "flex",
                   justifyContent: "space-around",
                   alignItems: "center",
@@ -197,8 +210,8 @@ function CommentModal({ id, postedBy }) {
                   margin: "20px",
                 }}
               >
-                <img
-                  src={pic}
+                {/* <img
+                  src={currentData && currentData.avatar(id)}
                   style={{
                     height: 40,
                     width: 40,
@@ -206,25 +219,41 @@ function CommentModal({ id, postedBy }) {
                     backgroundColor: "silver",
                     objectFit: "cover",
                   }}
-                />
-                <input
+                /> */}
+
+                <textarea
                   value={com}
                   onChange={(e) => {
                     setCom(e.target.value);
                   }}
                   placeholder="type..."
-                  style={{ height: "40px", marginTop: "px", width: "60%" }}
+                  style={{ height: "40px", marginTop: "px", width: "80%" }}
                 />
-
-                <SendIcon
-                  onClick={comenting}
+                <div
+                  className="trying"
                   style={{
-                    // marginLeft: "-20px",
-                    // height: "15px",
-                    cursor: "pointer",
-                    fontSize: "20px",
+                    height: "30px",
+                    width: "30px",
+                    display: "flex",
+                    borderRadius: "50px",
+
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <SendIcon
+                    onClick={comenting}
+                    style={{
+                      // marginLeft: "-20px",
+                      // height: "15px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      // background: "red",
+                      // borderRadius: "50px",
+                      // alignItems: "center",
+                    }}
+                  />
+                </div>
               </div>
               {needData.map(({ id, timer, com, createdAt, poster }) => (
                 <div>
