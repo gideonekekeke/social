@@ -7,11 +7,13 @@ import Navbar from "./Components/Navbar";
 import Upload from "./Components/Upload";
 import { GlobalProvider } from "./Components/AuthState/GlobalContext";
 import SignUp from "./Components/SignUp";
+import ProfessionalCards from "./Components/ProfessionalCards/ProfessionalCards";
 
 function App() {
   return (
     <>
-      <GlobalProvider>
+      <ProfessionalCards />
+      {/* <GlobalProvider>
         <Router>
           <Navbar />
           <Switch>
@@ -20,7 +22,7 @@ function App() {
             <Route exact path="/signup" component={SignUp} />
           </Switch>
         </Router>
-      </GlobalProvider>
+      </GlobalProvider> */}
     </>
   );
 }
